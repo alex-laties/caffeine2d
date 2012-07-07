@@ -9,6 +9,7 @@ file = new(node_static.Server)(webroot,
     headers: { 'X-Powered-By': 'node-static' }
   }
 )
+
 handler = (request, response) ->
   request.addListener 'end', () ->
     file.serve request, response, (err, results) ->
