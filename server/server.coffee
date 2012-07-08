@@ -1,7 +1,7 @@
 fs = require('fs')
 node_static = require('node-static')
 util = require('util')
-webroot = './public'
+webroot = '/home/vagrant/caffeine2d/client/public'
 port = 8888
 file = new(node_static.Server)(webroot,
   {
@@ -34,3 +34,5 @@ io.sockets.on 'connection', (socket) ->
 
 app.listen port, '0.0.0.0'
 console.log 'Server running on 0.0.0.0:8888'
+
+io.sockets.emit 'chat', {user: 'lol', msg: 'welcome to CaffeineChat!'}

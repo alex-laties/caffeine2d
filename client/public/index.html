@@ -4,19 +4,38 @@
     <link rel="stylesheet" type="text/css" href="/css/bootstrap-responsive.css" />
   </head>
   <body>
+    <!-- BEGIN CONTENT -->
+    <div class="row">
+
+      <!-- BEGIN ROOM LISTING -->
+      <div class="span2" id="roomList">
+      </div>
+      <!-- END ROOM LISTING -->
+
+      <!-- BEGIN CHAT -->
+      <div class="span10 tabbable" id="chatBox">
+        <ul class="nav nav-tabs">
+        </ul>
+        <div class="tab-content">
+        </div>
+      </div>
+      <!-- END CHAT -->
+    </div>
+    <!-- END CONTENT -->
+
+    <div id="chatInput">
+      <textarea class="input-xlarge"></textarea>
+    </div>
 
     <!-- Javascript stuff -->
-    <script src="/js/bootstrap.js"></script>
+    <!-- Order is actually important here :/ -->
     <script src="/js/jquery-1.7.2.js"></script>
+    <script src="/js/bootstrap.js"></script>
     <script src="/socket.io/socket.io.js"></script>
-    <script src="/js/caffeine2d/chat/init.js"></script>
-    <script>
-      var socket = io.connect('http://localhost:8888');
-      socket.on('news', function(data) {
-        console.log(data);
-        socket.emit('my other event', {my: 'data'});
-      });
-    </script>
+
+    <!-- BEGIN CAFFEINE -->
+    <script src="/js/chat.js"></script>
+    <script src="/js/init.js"></script>
   </body>
 </html>
 
