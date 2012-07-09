@@ -45,25 +45,24 @@ class ChatRoom
 class ChatView
   constructor: (@id, div) ->
     #create main chat tab
-    $('.nav-tabs').append "<li><a href=\"##{@id}\" data-toggle=\"tab\">#{@id}</a></li>"
+    $('li#template').clone().appendTo 'ul.nav-tabs'
+    $('ul.nav-tabs > li#template > a').attr 'href', "##{@id}"
+    $('ul.nav-tabs > li#template > a').text "#{@id}"
+    $('ul.nav-tabs > li#template').attr 'id', ""
+
     #create main chat view
-    if not div
-      div = '.tab-content'
-
-    chat_html = "<div class=\"tab-pane\" id=\"#{@id}\">"
-    chat_html += '</div>'
-
-    $(div).append chat_html
+    $('div#template').clone().appendTo 'div.tab-content'
+    $('div.tab-content > div#template').attr 'id', "#{@id}"
 
   notify: (message) ->
     if not message
       return
 
     if message.msg_rcv
-      $("##{@id}").append "<p>#{message.msg_rcv}</p>"
+      $("div##{@id}").append "<p>#{message.msg_rcv}</p>"
 
     if message.msg_snt
-      $("##{@id}").append "<p><b>#{message.msg_snt}</b></p>"
+      $("div##{@id}").append "<p><b>#{message.msg_snt}</b></p>"
 
 exports = this
 exports.ChatRoom = ChatRoom
