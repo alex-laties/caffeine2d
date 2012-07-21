@@ -29,6 +29,7 @@ $(document).ready () ->
   chatview = new ChatView('default')
   chatroom.add_subscriber(chatview)
   socket = init_socket()
+  window.chatmanager = new ChatManager([chatroom], [chatview])
   socket.on 'news', (data) ->
     console.log data
 

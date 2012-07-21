@@ -1,3 +1,5 @@
+Array::remove = (e) -> @[t..t] = [] if (t = @indexOf(e)) > -1
+
 class ChatRoom
   constructor: (@name, @roommates, @messages) ->
     if not @name
@@ -18,7 +20,7 @@ class ChatRoom
 
   roommate_leave: (roommate) ->
     if roommate in @roommates
-      @roommates.pop roommate
+      @roommates.remove roommate
       @notify_subscribers {rmmt_lv: roommate}
 
   send_message: (message) ->
@@ -36,7 +38,7 @@ class ChatRoom
 
   remove_subscriber: (subscriber) ->
     if subscriber in @subscribers
-      @subscribers.pop subscriber
+      @subscribers.remove subscriber
 
   notify_subscribers: (notification) ->
     for subscriber in @subscribers
@@ -64,6 +66,55 @@ class ChatView
     if message.msg_snt
       $("div##{@id}").append "<p><b>#{message.msg_snt}</b></p>"
 
+class ChatManager
+  constructor: (@rooms, @views, @socket) ->
+    if not @rooms?
+      @rooms = []
+      @currentRoom = null
+    else
+      @currentRoom = @rooms[0]
+      @rooms[0].add_subscriber @
+
+    if not @views?
+      @views = []
+
+  add_room: (room) ->
+    if room not in @rooms
+      room.add_subscriber @
+      @rooms.push room
+
+  remove_room: (room) ->
+    if room in @rooms
+      @rooms.remove room
+      room.remove_subscriber @
+
+    if room is @currentRoom
+      if @rooms.length > 0
+        @currentRoom = @rooms[0]
+      else
+        @currentRoom = null
+        console.log "we're out of rooms!?"
+
+  select_room: (id) ->
+    if @currentRoom.id is id
+      return
+
+    room = (r for r in @rooms when r.id is id)
+    if room.length > 0
+      @currentRoom = room[0]
+      $('div.tab-content > div').removeClass 'active'
+      $("div##{@currentRoom.id}").addClass 'active'
+
+  notify: (message) ->
+    if message.msg_snt
+      @socket.send_message message.msg_snt
+    else if message.sckt_rcv
+      room = (r for r in @rooms when r.id is message.sckt_rcv.id)
+      room[0].receive_message(message.sckt_rcv.content)
+
+#########################################
+## EXPORTS
 exports = this
 exports.ChatRoom = ChatRoom
 exports.ChatView = ChatView
+exports.ChatManager = ChatManager
