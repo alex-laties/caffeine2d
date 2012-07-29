@@ -13,6 +13,8 @@ class ChatRoom
 
     @subscribers = []
 
+    @id = @name #temporary hack until id's aren't tied to names
+
   roommate_enter: (roommate) ->
     if roommate not in @roommates
       @roommates.push roommate
@@ -47,24 +49,30 @@ class ChatRoom
 class ChatView
   constructor: (@id, div) ->
     #create main chat tab
-    $('li#template').clone().appendTo 'ul.nav-tabs'
-    $('ul.nav-tabs > li#template > a').attr 'href', "##{@id}"
-    $('ul.nav-tabs > li#template > a').text "#{@id}"
-    $('ul.nav-tabs > li#template').attr 'id', ""
+    $('li.template').clone().appendTo 'ul.nav-tabs'
+    $('ul.nav-tabs > li.template > a').attr 'href', "##{@id}"
+    $('ul.nav-tabs > li.template > a').text "#{@id}"
+    $('ul.nav-tabs > li.template').removeClass 'template'
 
     #create main chat view
-    $('div#template').clone().appendTo 'div.tab-content'
-    $('div.tab-content > div#template').attr 'id', "#{@id}"
+    $('div.template#chat_window_temp').clone().appendTo 'div.tab-content'
+    $('div.tab-content > div.template#chat_window_temp').attr 'id', "#{@id}"
+    $('div.tab-content > div.template').removeClass 'template'
+    
+    #add chat entry form
+    $('div.templates > div.template#chat_box_temp').clone().appendTo "div##{@id} > .chat-input"
+    $("div##{@id} div#chat_box_temp").attr 'id', "#{@id}_chatbox"
+    $("##{@id}_chatbox").removeClass 'template'
 
   notify: (message) ->
     if not message
       return
 
     if message.msg_rcv
-      $("div##{@id}").append "<p>#{message.msg_rcv}</p>"
+      $("div##{@id} > .chat-display").append "<p>#{message.msg_rcv}</p>"
 
     if message.msg_snt
-      $("div##{@id}").append "<p><b>#{message.msg_snt}</b></p>"
+      $("div##{@id} > .chat-display").append "<p><b>#{message.msg_snt}</b></p>"
 
 class ChatManager
   constructor: (@rooms, @views, @socket) ->
@@ -77,6 +85,31 @@ class ChatManager
 
     if not @views?
       @views = []
+
+    @setup_socket @socket
+
+    @setup_rooms @rooms
+
+  setup_socket: (@socket) ->
+    a = @rooms
+    @socket.on 'chat', (data) ->
+      id = data.id
+      for room in (r for r in a when r.id is id)
+        room.receive_message data.message
+
+    a = @rooms #fuckin closures >:(
+    @socket.on 'news', (data) ->
+      for room in a
+        room.receive_message data.message
+
+  setup_rooms: (@rooms) ->
+    for room in @rooms
+      id = room.id
+      $("##{id}_chatbox a").click () ->
+        to_send = $("##{id}_chatbox > textarea").val()
+        $("##{id}_chatbox > textarea").val("")
+        console.log to_send
+        room.send_message to_send
 
   add_room: (room) ->
     if room not in @rooms
@@ -107,10 +140,7 @@ class ChatManager
 
   notify: (message) ->
     if message.msg_snt
-      @socket.send_message message.msg_snt
-    else if message.sckt_rcv
-      room = (r for r in @rooms when r.id is message.sckt_rcv.id)
-      room[0].receive_message(message.sckt_rcv.content)
+      @socket.emit 'chat',  message.msg_snt
 
 #########################################
 ## EXPORTS

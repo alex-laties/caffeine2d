@@ -24,11 +24,6 @@
     </div>
     <!-- END CONTENT -->
 
-    <div class="row" id="chatInput">
-      <textarea class="input-xlarge"></textarea>
-      <button class="btn">Submit</button>
-    </div>
-
     <!-- Javascript stuff -->
     <!-- Order is actually important here :/ -->
     <script src="/js/jquery-1.7.2.js"></script>
@@ -42,9 +37,16 @@
     <!-- TEMPLATES -->
     <div class="templates">
       <!-- TAB TEMPLATE -->
-      <li id="template"><a href data-toggle="tab"></a></li>
-      <div class="tab-pane" id="template">
+      <li class="template" id><a href data-toggle="tab"></a></li>
+      <div class="template tab-pane" id="chat_window_temp">
+        <div class="chat-display"></div>
+        <div class="chat-input"></div>
       </div>
+      <div class="template row" id="chat_box_temp">
+        <textarea class="input-xlarge"></textarea>
+        <a class="btn">Submit</a>
+      </div>
+    </div>
   </body>
 </html>
 

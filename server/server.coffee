@@ -29,7 +29,7 @@ io = require('socket.io').listen(app)
 
 io.sockets.on 'connection', (socket) ->
   socket.emit 'news', {hello: 'world'}
-  socket.on 'my other event', (data) ->
+  socket.on 'chat', (data) ->
     console.log data
 
 app.listen port, '0.0.0.0'

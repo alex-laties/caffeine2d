@@ -25,18 +25,14 @@ init_socket = (options) ->
   socket = io.connect (socket_url)
 
 $(document).ready () ->
-  chatroom = new ChatRoom('default', [], ['hello :p'])
   chatview = new ChatView('default')
+  chatroom = new ChatRoom('default', [], ['hello :p'])
   chatroom.add_subscriber(chatview)
   socket = init_socket()
-  window.chatmanager = new ChatManager([chatroom], [chatview])
+  window.chatmanager = new ChatManager([chatroom], [chatview], socket)
   socket.on 'news', (data) ->
     console.log data
 
-  socket.on 'chat', (data) ->
-    chatroom.receive_message data
-    console.log data
- 
   console.log 'initialized chat'
   chatroom.receive_message 'initialized chat'
 
